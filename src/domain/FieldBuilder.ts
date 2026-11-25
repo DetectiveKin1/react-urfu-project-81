@@ -1,8 +1,11 @@
 import { Tag } from './index.js';
 import type { Attributes, Template } from './index.js';
 
-export interface InputOptions extends Attributes {
-    as?: 'input' | 'textarea';
+export interface InputOptions {
+    as?: 'input' | 'textarea' | undefined;
+    label?: string | undefined;
+    labelHtml?: Attributes | undefined;
+    [key: string]: string | number | boolean | Attributes | undefined;
 }
 
 function capitalize<T>(fieldName: keyof T & string) {
@@ -23,11 +26,25 @@ export class FieldBuilder<T extends Template> {
             throw new Error(`Field '${fieldName}' does not exist in the template.`);
         }
 
-        const label = new Tag('label', {for: fieldName}, capitalize(fieldName));
-        this.fields.push(label)
+        const {
+            as = 'input',
+            label,
+            labelHtml = {},
+            ...rest
+        } = options;
+
+        const labelText = label ?? capitalize(fieldName);
+        const labelTag = new Tag('label', { for: fieldName, ...labelHtml }, labelText);
+        this.fields.push(labelTag);
+
+        const restOptions: Attributes = {};
+        for (const [key, val] of Object.entries(rest)) {
+            if (typeof val !== 'object') {
+                restOptions[key] = val;
+            }
+        }
 
         const value = String(this.template[fieldName] ?? '');
-        const { as = 'input', ...restOptions } = options;
 
         if (as === 'textarea') {
             const { cols = 20, rows = 40, ...textareaAttrs } = restOptions;

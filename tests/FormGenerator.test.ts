@@ -4,19 +4,19 @@ import { FormGenerator } from '../src/domain/index.js';
 describe('FormGenerator', () => {
     const template = { name: 'rob', job: 'hexlet', gender: 'm' };
 
-    it('форма по умолчанию с action="#" и method="post"', () => {
+    it('форма по умолчанию с method="post" и action="#"', () => {
         const form = FormGenerator.formFor(template, {}, () => {});
-        expect(form).toBe('<form action="#" method="post"></form>');
+        expect(form).toBe('<form method="post" action="#"></form>');
     });
 
     it('корректный url в атрибут action', () => {
         const form = FormGenerator.formFor(template, { url: '/users' }, () => {});
-        expect(form).toBe('<form action="/users" method="post"></form>');
+        expect(form).toBe('<form method="post" action="/users"></form>');
     });
 
     it('options не переданы (или переданы пустыми)', () => {
         const form = FormGenerator.formFor(template);
-        expect(form).toBe('<form action="#" method="post"></form>');
+        expect(form).toBe('<form method="post" action="#"></form>');
     });
 
     it('поля input и textarea на основе данных объекта', () => {
@@ -26,7 +26,7 @@ describe('FormGenerator', () => {
         });
 
         expect(form).toBe(
-            '<form action="#" method="post">' +
+            '<form method="post" action="#">' +
             '<label for="name">Name</label>' +
             '<input name="name" type="text" value="rob">' +
             '<label for="job">Job</label>' +
@@ -42,7 +42,7 @@ describe('FormGenerator', () => {
         });
 
         expect(form).toBe(
-            '<form action="#" method="post">' +
+            '<form method="post" action="#">' +
             '<label for="name">Name</label>' +
             '<input name="name" type="text" value="rob" class="user-input">' +
             '<label for="job">Job</label>' +
@@ -51,13 +51,31 @@ describe('FormGenerator', () => {
         );
     });
 
-    it('дефолтные атрибуты для textarea и позволять их переопределять', () => {
+    it('поддержка кастомного текста label и атрибутов labelHtml', () => {
+        const form = FormGenerator.formFor(template, {}, (f) => {
+            f.input('name', {
+                label: 'User',
+                labelHtml: { class: 'form-label', id: 'name-label' },
+            });
+            f.submit('Ok');
+        });
+
+        expect(form).toBe(
+            '<form method="post" action="#">' +
+            '<label for="name" class="form-label" id="name-label">User</label>' +
+            '<input name="name" type="text" value="rob">' +
+            '<input type="submit" value="Ok">' +
+            '</form>'
+        );
+    });
+
+    it('дефолтные атрибуты для textarea и возможность их переопределять', () => {
         const defaultTextareaForm = FormGenerator.formFor(template, {}, (f) => {
             f.input('job', { as: 'textarea' });
         });
 
         expect(defaultTextareaForm).toBe(
-            '<form action="#" method="post">' +
+            '<form method="post" action="#">' +
             '<label for="job">Job</label>' +
             '<textarea cols="20" rows="40" name="job">hexlet</textarea>' +
             '</form>'
@@ -68,7 +86,7 @@ describe('FormGenerator', () => {
         });
 
         expect(customTextareaForm).toBe(
-            '<form action="#" method="post">' +
+            '<form method="post" action="#">' +
             '<label for="job">Job</label>' +
             '<textarea cols="50" rows="50" name="job">hexlet</textarea>' +
             '</form>'
@@ -80,10 +98,10 @@ describe('FormGenerator', () => {
             FormGenerator.formFor(template, { url: '/users' }, (f) => {
                 f.input('name');
                 f.input('job', { as: 'textarea' });
-                // @ts-expect-error Чтоб дошло до рантайма, но даже не дойдёт)
+                // @ts-expect-error Проверка рантайм-ошибки для несуществующего поля
                 f.input('age');
             });
-        }).toThrow("Field 'age' does not exist in the template");
+        }).toThrow("Field 'age' does not exist in the template.");
     });
 
     describe('Кнопка отправки (submit)', () => {
@@ -95,7 +113,7 @@ describe('FormGenerator', () => {
             });
 
             expect(form).toBe(
-                '<form action="#" method="post">' +
+                '<form method="post" action="#">' +
                 '<label for="name">Name</label>' +
                 '<input name="name" type="text" value="rob">' +
                 '<label for="job">Job</label>' +
@@ -113,7 +131,7 @@ describe('FormGenerator', () => {
             });
 
             expect(form).toBe(
-                '<form action="#" method="post">' +
+                '<form method="post" action="#">' +
                 '<label for="name">Name</label>' +
                 '<input name="name" type="text" value="rob">' +
                 '<label for="job">Job</label>' +

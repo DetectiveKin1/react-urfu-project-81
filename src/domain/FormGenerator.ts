@@ -20,8 +20,8 @@ export class FormGenerator {
         }
 
         const formTag = new Tag('form', {
-            action: url,
             method,
+            action: url,
             ...attributes,
         }).addChildTags(builder.getFields());
 
