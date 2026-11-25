@@ -1,1 +1,4 @@
-export {FormGenerator} from './domain/index.js';
+import { FormGenerator } from './domain/index.js';
+
+export { FormGenerator };
+export default FormGenerator;

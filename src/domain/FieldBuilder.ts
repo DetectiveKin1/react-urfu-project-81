@@ -20,7 +20,7 @@ export class FieldBuilder<T extends Template> {
     public input(fieldName: keyof T & string, options: InputOptions = {}): void {
 
         if (!Object.prototype.hasOwnProperty.call(this.template, fieldName)) {
-            throw new Error(`Field '${fieldName}' does not exist in the template`);
+            throw new Error(`Field '${fieldName}' does not exist in the template.`);
         }
 
         const label = new Tag('label', {for: fieldName}, capitalize(fieldName));

@@ -13,7 +13,8 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "dist/main.js",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "scripts": {
     "dev": "tsx src/index.ts",
     "dev:watch": "tsx watch src/index.ts",
